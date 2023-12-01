@@ -13,8 +13,6 @@ def get_number(line):
                 first = c
             else:
                 last = c
-        for digit in ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]:
-
     if last == 0:
             return int(first) * 10 + int(first)
     return int(first) * 10 + int(last)
