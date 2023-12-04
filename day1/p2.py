@@ -28,5 +28,5 @@ def get_number(line):
 
 for line in content:
     tab.append(get_number(line))
-    #print(line, ":", tab[-1])
+    print(line, ":", tab[-1])
 print(sum(tab))

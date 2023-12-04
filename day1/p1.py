@@ -1,13 +1,11 @@
 with open("input", "r") as f:
     content = f.read()
-content = content.split("\n")
-content.pop()
-tab = []
+content = content.split("\n")[:-1]
 
 def get_number(line):
     first = 0
     last = 0
-    for idx, c in enum(line):
+    for c in line:
         if c.isnumeric():
             if (first == 0):
                 first = c
@@ -17,6 +15,7 @@ def get_number(line):
             return int(first) * 10 + int(first)
     return int(first) * 10 + int(last)
 
+tab = []
 for line in content:
     tab.append(get_number(line))
 print(sum(tab))
