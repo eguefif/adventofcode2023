@@ -1,7 +1,7 @@
 from itertools import tee
 
 
-with open("input_ex", "r") as f:
+with open("input", "r") as f:
     content = f.read()
 
 content = [c.split() for c in content.split('\n') if len(c) > 0]
@@ -17,15 +17,21 @@ def pairwise(iterable):
 
 retval = 0
 
+def sub(data):
+    s = 0
+    for i in reversed(range(1, len(data))):
+        s = data[i] - s
+    return data[0] - s
+
 ret = []
 for line in data:
     prev = line
-    last = [prev[-1]]
+    last = [prev[0]]
     while True:
         next_s = [b - a for (a,b) in pairwise(prev)]
         if not any(next_s):
             break
         prev = next_s
-        last.append(next_s[-1])
-    ret.append(sum(last))
+        last.append(next_s[0])
+    ret.append(sub(last))
 print(sum(ret))
