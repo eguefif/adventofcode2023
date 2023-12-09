@@ -1,9 +1,10 @@
 from multiprocessing import Process
+import numpy as np
 with open("input", "r") as f:
     content = f.read()
 
 directions, content = content.split("\n\n")
-content = content.split("\n")
+content = content.split("\n")[:-1]
 lab = {}
 for line in content:
     sp = line.split(" = ")
@@ -18,25 +19,31 @@ for line in content:
 lr = {"L": 0, "R": 1}
 
 starts = [s for s in lab.keys() if s[2] == 'A']
-print(starts)
-def is_everybody_ends(currents):
-    cond = [c[2] == "Z" for c in currents]
-    return (all(cond))
 
-def print_current(currents, direction):
-    print("Direciton :", direction, "CUrrents:" , currents)
-
-def get_nbr(lab, directions, starts):
+def get_nbr(lab, directions, start):
     i = 0
-    currents = starts
-    while not is_everybody_ends(currents):
+    current = start
+    while current[2] != "Z":
         for d in directions:
             direction = lr[d]
-            new_c = []
-            for current in currents:
-                new_c.append(lab[current][direction])
-            currents = new_c
+            current = lab[current][direction]
             i+=1
+            if current[2] == "Z":
+                return i
     return i
 
-print(get_nbr(lab, directions, starts))
+def lcm(l):
+    return math.prod(l)/math.gcd(*l)
+    c = max(l) + 1
+    p = math.prod(l)
+    while c != p:
+        c += 1
+    return c
+
+l = []
+for start in starts:
+    l.append(get_nbr(lab, directions, start))
+
+data = np.array(l)
+
+print(np.lcm.reduce(data))
