@@ -39,44 +39,54 @@ for p in pipes:
         new_pipe.append(info)
     pipeline.append(new_pipe)
 
-def apply_pipe(r, stretch, mask):
-    for idx, e in enumerate(r):
-        if e >= stretch.start and e <= stretch.end:
-            r[idx] -= stretch.translation
-            mask[idx] = True
-        retval.append(e)
-    return (retval)
+def apply_pipe(r, stretch):
+    former_low = r[0]
+    former_high = r[1]
+    if stretch["start"] <= r[0]:
+        low = r[0] - stretch["translation"]
+        former_low = low
+    else:
+        low = stretch["start"] - stretch["translation"] 
+    if stretch["end"] <= r[1]:
+        high = stretch["end"] - stretch["translation"]
+    else:
+        high = r[1] - stretch["translation"]
+        former_high = high
+    return (min(former_low, low), max(former_high,high))
 
 def overlap(stretch, start, end):
     if (stretch["start"] <= start and stretch["end"] >= start) or (stretch["end"] >= end and stretch["start"] <= end):
         return True
     return False
 
-def process_one_range(seeds, pipeline):
-    start = seeds[i]
-    end = seeds[i+1] + seeds[i]
-    r = list(range(start, end))
-    start = r[0]
-    end = r[-1]
+def get_new_range(possible):
+    if len(possible) == 0:
+        return None
+    lows = [l[0] for l in possible]
+    highs = [l[1] for l in possible]
+    return min(lows), max(highs)
+
+def get_min(seeds, pipeline):
+    print("new")
     for f,pipe in enumerate(pipeline):
-        start = r[0]
-        end = r[-1]
-        mask = [False for _ in range(len(r))]
+        possible = []
         for stretch in pipe:
-            if not overlap(stretch, start, end):
+            if not overlap(stretch, seeds[0], seeds[1]):
                 continue
-            r = apply_pipe(r, stretch, mask)
-    print(min(r))
+            possible.append(apply_pipe(seeds, stretch))
+        ret = get_new_range(possible)
+        if ret != None:
+            seeds = ret
+        print(list(range(seeds[0], seeds[1] + 1)))
+    return seeds[0]
 
 list_p = []
+low = sum(seeds)
+retval = []
 for i in range(0, len(seeds), 2):
     r = []
     r.append(seeds[i])
-    r.append(seeds[i+1])
-    list_p.append(Process(target=process_one_range, args=(r, pipeline)))
+    r.append(seeds[i] + seeds[i+1])
+    retval.append(get_min(r, pipeline))
 
-for process in list_p:
-    process.start()
-
-while list_p:
-    list_p.pop().join()
+print(min(retval))
